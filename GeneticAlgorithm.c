@@ -31,9 +31,7 @@ void printPopulation(int* population, int POPULATION_SIZE, int GENE_SIZE, int ve
     }
 }
 //create  population of genes that are 0 or 1
-int* initialisePopulation(int* population,int POPULATION_SIZE, int GENE_SIZE , int verbosity, int* target)
-{
-    //printf("initialising population...\n");
+int* initialisePopulation(int* population,int POPULATION_SIZE, int GENE_SIZE , int verbosity, int* target){
     int i, j;
     for (i = 0; i < POPULATION_SIZE*GENE_SIZE; i++)
     {
@@ -44,7 +42,6 @@ int* initialisePopulation(int* population,int POPULATION_SIZE, int GENE_SIZE , i
                         exit(1);      
                     }
     }
-    //printPopulation(population,POPULATION_SIZE,GENE_SIZE, 1, target);
     return population;
 }
 //test the fitness of an individual
@@ -62,9 +59,8 @@ int testIndividual(int* population, int GENE_SIZE, int* target, int index)
     return fitness;
 }
 //returns an array of fitness values for each individual in the population
-int* naturalSelection(int* primePopulation,int* population, int* fitness, int POPULATION_SIZE, int GENE_SIZE,int* target, int verbosity){
-   //printf("Natural Selection\n");
-   for (int h = 0; h < 3; h++)
+int* naturalSelection(int* primePopulation,int* population, int* fitness, int POPULATION_SIZE, int GENE_SIZE,int* target, int verbosity,int numParents){
+   for (int h = 0; h < numParents; h++)
     {
         for (int i = 0; i < POPULATION_SIZE; i++)
         {
@@ -82,70 +78,55 @@ int* naturalSelection(int* primePopulation,int* population, int* fitness, int PO
                 for (int k = 0; k < GENE_SIZE; k++)
                 {
                     *(primePopulation+h*GENE_SIZE+k) = *(population+i*GENE_SIZE+k);                        
-                    if(*(primePopulation+h*GENE_SIZE+k) > 1||*(primePopulation+h*GENE_SIZE+k) < 0 ){
-                        printf("%d<%d<%d|%d|%d\n",*(population+i*GENE_SIZE+k),*(primePopulation+i*GENE_SIZE+k),fitness[i]);
-                        printf("NS");
-                        exit(1);      
-                    }
                 }
                 h++;
             }
-            
         }
     }
-    //printf("Big boys\n");
-    //printIndividual("\nBest",primePopulation,GENE_SIZE,0);
-    //printPopulation(primePopulation,3,GENE_SIZE,1,fitness);
-    //printf("\n");
-    return reproduction(fitness,population,primePopulation,POPULATION_SIZE,GENE_SIZE,target, verbosity);
+    return primePopulation;
 }
 //returns the fitness of the population
-int* getFitness(int* fitness, int* population, int POPULATION_SIZE, int GENE_SIZE, int* target, int verbosity){
-    //printPopulation(population,POPULATION_SIZE,GENE_SIZE, verbosity, target);
+int* getFitness(int* fitness, int* population, int POPULATION_SIZE, int GENE_SIZE, int* target, int verbosity,int numParents){
     int i;
     for (i = 0; i < POPULATION_SIZE; i++)
     {
         fitness[i] = testIndividual(population, GENE_SIZE,target, i);
-        //printf("%d<>%d\n",*(population+i),i);
         if(*(population+i) > 1||*(population+i) < 0 ){
             printf("%d<%d",*(population+i),i);
-            exit(1); 
+            exit(0); 
         }
 
     }
-    
-    if(count % 1 == 0){
-        printf("Gen %d|\t",count++);
-        printf("Fit %d| ",fitness[0]);
-        printIndividual("Genes|",population,GENE_SIZE,0);
-        printf("\r");
+
+    if(count % 100 == 0){
+    printf("Gen %d|",count++);
+    printf("Fit %d|",fitness[0]);
+    printIndividual("Genes|",population,GENE_SIZE,0);
+    printf("\r");
     } else {
         count++;
     }
-    //printPopulation(population,POPULATION_SIZE,GENE_SIZE, 1, fitness);
-    return naturalSelection(population,population,fitness,POPULATION_SIZE,GENE_SIZE,target, verbosity);
+    return fitness;
 }
 //creates a new population by randomly selecting individuals from the prime population with a chang of mutation
-int* reproduction(int* fitness, int* population,int* primePopulation, int POPULATION_SIZE, int GENE_SIZE,int* target, int verbosity){
-    //printf("Reproduction\n");
-    if(fitness[0] == GENE_SIZE){
-        return primePopulation;
-    };
-    for(int j = 0; j < 3; j++){
+int* reproduction(int* fitness, int* population,int* primePopulation, int POPULATION_SIZE, int GENE_SIZE,int* target, int verbosity,int numParents){
+    for(int j = 0; j <  numParents; j++){
         for(int i = 0; i < GENE_SIZE; i++){
             *(population+j*GENE_SIZE+i) = *(primePopulation+j*GENE_SIZE+i);
         }
     }
     int i, j;
     srand(time(NULL));
-    for (i = 3; i < POPULATION_SIZE-POPULATION_SIZE/10; i++)
+    int total = 0;
+    for (i = numParents; i < POPULATION_SIZE-POPULATION_SIZE/10; i++)
     {
         for (j = 0; j < GENE_SIZE; j++)
         {
-            if(rand() % 100*GENE_SIZE < 3){
-                *(population+i*GENE_SIZE+j) = *(primePopulation+(rand() % 3)*GENE_SIZE+j);
+            if(rand() % 5*numParents < numParents){
+                *(population+i*GENE_SIZE+j) = *(primePopulation+(rand() % numParents)*GENE_SIZE+j);
             }
             else{
+                total++;
                 *(population+i*GENE_SIZE+j) = rand() % 2;
             }
         }
@@ -154,15 +135,23 @@ int* reproduction(int* fitness, int* population,int* primePopulation, int POPULA
     {
         *(population+i) = rand() % 2;
     }
-    return getFitness(fitness,population,POPULATION_SIZE,GENE_SIZE,target, verbosity);
+    return population;
 }
 //runs the genetic algorithm
-int* geneticAlgorithm(int POPULATION_SIZE, int GENE_SIZE, int*target, int verbosity){
+int* geneticAlgorithm(int POPULATION_SIZE, int GENE_SIZE, int*target, int verbosity, int numParents){
     int* population = (int*)malloc(POPULATION_SIZE * GENE_SIZE * sizeof(int));
     int* fitness = (int*)malloc(POPULATION_SIZE * sizeof(int));
-    int* primePopulation = (int*)malloc(3 * GENE_SIZE * sizeof(int));
-    population = initialisePopulation(population,POPULATION_SIZE,GENE_SIZE, verbosity,target);
-    int* output = getFitness(fitness,population,POPULATION_SIZE,GENE_SIZE,target, verbosity);
+    int* primePopulation = (int*)malloc(numParents * GENE_SIZE * sizeof(int));
+    
+     fitness = getFitness(fitness,initialisePopulation(population,POPULATION_SIZE,GENE_SIZE, verbosity,target),POPULATION_SIZE,GENE_SIZE,target, verbosity, numParents);
+    while(fitness[0] != GENE_SIZE){
+        fitness = getFitness(fitness,reproduction(fitness,population,naturalSelection(population,population,fitness,POPULATION_SIZE,GENE_SIZE,target, verbosity,numParents),POPULATION_SIZE,GENE_SIZE,target, verbosity,numParents),POPULATION_SIZE,GENE_SIZE,target, verbosity,numParents);
+    
+    }
+    int* output = (int*)malloc(GENE_SIZE * sizeof(int));
+    for(int i = 0; i < GENE_SIZE; i++){
+        *(output+i) = *(population+i);
+    }
     free(population);
     free(fitness);
     free(primePopulation); 
@@ -171,14 +160,15 @@ int* geneticAlgorithm(int POPULATION_SIZE, int GENE_SIZE, int*target, int verbos
 int main()
 {
     int pop = 100;
-    int size = 90;
+    int size = 20;
+    int numParents = 3;
     int* target = malloc(size*sizeof(int));
     for (int i = 0; i < size; i++)
     {
         *(target+i) = 1;//rand() % 2;
     }
    
-    printIndividual("Result:",geneticAlgorithm(pop,size,target,0),size,0);
+    printIndividual("Result:",geneticAlgorithm(pop,size,target,0,numParents),size,0);
     printIndividual("\nTarget:",target,size,0);
     printf("\n\n\n");
     
