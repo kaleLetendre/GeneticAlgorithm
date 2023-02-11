@@ -150,6 +150,7 @@ int* geneticAlgorithm(int POPULATION_SIZE, int GENE_SIZE, int maxFitness, int ma
 }
 //Custom fitness function designed by user, the population, the size of the genes and the index as an input
 //this can be used to test the genes of an individual as shown below
+//genes of an individual are in the range (population+index*size) to (population+index*size+size)
 int fitnessCalculator(int* population, int size, int index){
     int fitness = 0;
     for (int i = 0; i < size; i++)
@@ -163,8 +164,8 @@ int fitnessCalculator(int* population, int size, int index){
 int main()
 {
     int pop = 1000;
-    int size = 20;
-    int numParents = 3;
+    int size = 100;
+    int numParents = 30;
     int mutationRate = 100;
     int maxGens = 1000000;
     int (*calc_ptr)(int*population,int size, int index);
@@ -173,6 +174,6 @@ int main()
     printIndividual("Result:",result,size,0, calc_ptr);
     //printIndividual("\nTarget:",target,size,0);
     printf("\n\n\n");
-    //printf("%d\n",(*calc)(0,0));
-    return 0;  
+    //printf("%d\n",(*calc)(0,0));s
+    return 0;
 }
