@@ -20,6 +20,7 @@ The code is structured into several functions, each performing a specific task i
 |naturalSelection()| This function performs natural selection and returns the fittest individuals from the population.|
 |getFitness()| This function calculates the fitness of the entire population and returns an array of fitness scores.|
 |reproduction()| This function creates a new population by randomly selecting individuals from the prime population with a chance of mutation.|
+
 The code contains comments explaining the purpose of each function and how it works. By reading the code and the comments, you should be able to gain a better understanding of the mechanisms of a genetic algorithm.
 
 ### Customising the Code
