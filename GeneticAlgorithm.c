@@ -4,7 +4,6 @@
 #include <time.h>
 void printIndividual();
 int* initialisePopulation();
-int testIndividual();
 int* naturalSelection();
 int* getFitness();
 int* reproduction();
@@ -43,13 +42,6 @@ int* initialisePopulation(int* population,int POPULATION_SIZE, int GENE_SIZE , i
                     }
     }
     return population;
-}
-//test the fitness of an individual
-int testIndividual(int* population, int GENE_SIZE, int index,int toAdd)
-{   
-    int fitness = 0;
-    fitness += toAdd;
-    return fitness;
 }
 //returns an array of fitness values for each individual in the population
 int* naturalSelection(int* primePopulation,int* population, int* fitness, int POPULATION_SIZE, int GENE_SIZE, int verbosity,int numParents){
