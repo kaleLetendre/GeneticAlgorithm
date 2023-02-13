@@ -24,7 +24,7 @@ The code is structured into several functions, each performing a specific task i
 The code contains comments explaining the purpose of each function and how it works. By reading the code and the comments, you should be able to gain a better understanding of the mechanisms of a genetic algorithm.
 
 ### Customising the Code
-The code can be customised to fit your specific requirements. You can change the parameters such as the size of the population, the size of each gene, the number of parants for each individual, and the mutation rate to suit your needs.
+The code can be customised to fit your specific requirements. You can change the parameters such as the size of the population, the size of each gene, the number of parants for each individual,the maximum fitness before accepting an individual as a result, the output verbosity, the minimum individual number found in a gene, the maximum number found in a gene, and the mutation rate to suit your needs.
 
 Additionally, the fitnessCalculator() function is just a simple placeholder function to show a very basic example of how fitness can be calculated using the genes. You should modify the fitnessCalculator() or pass a different function that outputs an int and takes in the same arguments as a  pointer in through calc_ptr. View code comments above fitnessCalculator() for more information.
 
